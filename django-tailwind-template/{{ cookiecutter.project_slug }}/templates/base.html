@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% raw %}{% block title %}{% endblock %}{% endraw %}</title>
+    {% raw %}{% load static %}{% endraw %}
+    <link rel="stylesheet" href="{% raw %}{% static 'css/output.css' %}{% endraw %}" type="text/css">
+    {% raw %}{% block css %}{% endblock %}{% endraw %}
+  </head>
+  <body>
+    {% raw %}{% block content %}
+    {% endblock %}{% endraw %}
+  </body>
+</html>
