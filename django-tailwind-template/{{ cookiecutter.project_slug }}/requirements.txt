@@ -1,2 +1,3 @@
 django
 django-components
+django-widget-tweaks
