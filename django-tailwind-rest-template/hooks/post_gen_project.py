@@ -84,13 +84,6 @@ def main():
     secret = generate_secret_key()
     env_path = Path(f"{project_dir}/.env")
 
-    if "{{ cookiecutter.init_git }}".lower() == "true":
-        print("Initializing Git repository...")
-        if run_command("git init", cwd=project_dir):
-            run_command("git add .", cwd=project_dir)
-            run_command('git commit -m "Initial commit"', cwd=project_dir)
-            print("Git repository initialized")
-
     print("Downloading Tailwind CSS executable...")
     tailwind_url = get_tailwind_executable_url()
     if not tailwind_url:
@@ -132,27 +125,33 @@ def main():
     if not download_file(htmx_js_url, htmx_js_path):
         print("Failed to download htmx.min.js")
 
-    tailwind_process = None
-    if "{{ cookiecutter.start_tailwind_watch }}".lower() == "true":
-        print("Starting Tailwind watch process...")
-        watch_cmd = f'"{tailwind_path}" -i static/css/input.css -o static/css/output.css --watch'
-        tailwind_process = run_command(watch_cmd, cwd=project_dir, background=True)
-        if tailwind_process:
-            print("Tailwind watch process started in background")
-        else:
-            print("Failed to start Tailwind watch process")
-
-    if tailwind_process:
-        with open(".background_processes", "w") as f:
-            f.write(f"Tailwind PID: {tailwind_process.pid}\n")
-
     with env_path.open("a", encoding="utf-8") as f:
         f.write(f"SECRET_KEY={secret}\n")
 
-    print("Post-generation setup completed")
-    print("Next steps:")
+    print("Setting up python environment...")
+    subprocess.run(["uv", "venv", ".venv", "--python=3.11"])
+    subprocess.run(["uv", "pip", "install", "-r", "requirements.txt"], cwd=project_dir)
+
+    print("Initializing git repository...")
+    subprocess.run(["git", "init", project_dir], cwd=project_dir)
+
     print(
-        """Run
+        "Running ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css..."
+    )
+    subprocess.run(
+        [
+            "./static/css/tailwindcss",
+            "-i",
+            "./static/css/input.css",
+            "-o",
+            "./static/css/output.css",
+        ],
+        cwd=project_dir,
+    )
+
+    print(
+        """ Post generation setup complete. Next steps:
+    Run
     cd {{ cookiecutter.project_slug }}
     ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css or
     ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css --watch
