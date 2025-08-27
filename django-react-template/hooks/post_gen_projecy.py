@@ -1,5 +1,13 @@
 from pathlib import Path
 import subprocess
+import secrets
+import string
+
+
+def generate_secret_key():
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    secret_key = "".join(secrets.choice(alphabet) for _ in range(50))
+    return secret_key
 
 
 def main():
@@ -53,7 +61,9 @@ def main():
     if not subprocess.run(["git", "init", str(ROOT_DIR)], check=True):
         print("Install git first.")
 
+    with open(str(BACKEND_DIR / ".env"), "a") as f:
+        f.write(f"SECRET_KEY={generate_secret_key()}")
+
 
 if __name__ == "__main__":
-    print(main.ROOT_DIR)
     main()
