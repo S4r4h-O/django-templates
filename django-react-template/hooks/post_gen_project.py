@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 import secrets
 import string
+import os
 
 
 def generate_secret_key():
@@ -63,6 +64,16 @@ def main():
 
     with open(str(BACKEND_DIR / ".env"), "a") as f:
         f.write(f"SECRET_KEY={generate_secret_key()}")
+
+    with open(str(FRONTEND_DIR / ".env"), "a") as f:
+        f.write("VITE_API_URL=http://localhost:8000/api")
+
+    git_ignore = Path(ROOT_DIR / "gitignore")
+    if git_ignore.exists():
+        print(git_ignore)
+        git_ignore.rename(ROOT_DIR / ".gitignore")
+    else:
+        print("gitignore does not exists.")
 
 
 if __name__ == "__main__":
