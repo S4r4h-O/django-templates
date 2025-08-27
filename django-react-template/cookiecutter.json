@@ -1,0 +1,13 @@
+{
+  "full_name": "Sarah O.",
+  "email": "sarah.shofani@proton.me",
+  "github_username": "S4r4h-O",
+  "project_name": "My Django React App",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "project_short_description": "A basic template for Django + Tailwind + DaisyUI",
+  "first_version": "0.1.0",
+  "_copy_without_render": [
+    "{{cookiecutter.project_slug}}/frontend/node_modules/**/*",
+    "{{cookiecutter.project_slug}}/frontend/**/*.js.map"
+  ]
+}
