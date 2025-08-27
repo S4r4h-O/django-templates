@@ -1,4 +1,4 @@
 django
 django-components
-django-widget-tweaks
 django-cotton
+django-environ
