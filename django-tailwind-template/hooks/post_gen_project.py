@@ -2,9 +2,15 @@
 
 import os
 import subprocess
-import sys
+import secrets
 import platform
 import requests
+from pathlib import Path
+
+
+def generate_secret_key():
+    alphabet = "abcdefghijklmnopqrstuvwxyz0123456789!@#%^&*(-_=+)"
+    return "".join(secrets.choice(alphabet) for _ in range(50))
 
 
 def run_command(command, cwd=None, background=False):
@@ -74,6 +80,9 @@ def get_tailwind_executable_url():
 def main():
     project_dir = os.getcwd()
     static_css_dir = os.path.join(project_dir, "static", "css")
+    static_js_dir = os.path.join(project_dir, "static", "js")
+    secret = generate_secret_key()
+    env_path = Path(f"{project_dir}/.env")
 
     if "{{ cookiecutter.init_git }}".lower() == "true":
         print("Initializing Git repository...")
@@ -117,6 +126,12 @@ def main():
     if not download_file(daisyui_theme_url, daisyui_theme_path):
         print("Failed to download daisyui-theme.js")
 
+    print("Downloading htmx.min.js...")
+    htmx_js_url = "https://unpkg.com/htmx.org@latest/dist/htmx.min.js"
+    htmx_js_path = os.path.join(static_js_dir, "htmx.min.js")
+    if not download_file(htmx_js_url, htmx_js_path):
+        print("Failed to download htmx.min.js")
+
     tailwind_process = None
     if "{{ cookiecutter.start_tailwind_watch }}".lower() == "true":
         print("Starting Tailwind watch process...")
@@ -130,6 +145,9 @@ def main():
     if tailwind_process:
         with open(".background_processes", "w") as f:
             f.write(f"Tailwind PID: {tailwind_process.pid}\n")
+
+    with env_path.open("a", encoding="utf-8") as f:
+        f.write(f"SECRET_KEY={secret}\n")
 
     print("Post-generation setup completed")
     print("Next steps:")
