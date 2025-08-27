@@ -1,5 +1,5 @@
 django
 django-components
-django-widget-tweaks
 django-cotton
 djangorestframework
+django-environ
