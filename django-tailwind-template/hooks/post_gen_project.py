@@ -45,8 +45,14 @@ def download_file(url, destination):
         response.raise_for_status()
 
         with open(destination, "wb") as f:
+            total_size = int(response.headers.get("content-length", 0))
+            print(f"{total_size/(1024*1024):.2f} MB")
+            downloaded = 0
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
+                if total_size:
+                    downloaded += len(chunk)
+                    print(f"Progress: {int(downloaded/total_size * 100)}%", end="\r")
 
         return True
     except Exception as e:
