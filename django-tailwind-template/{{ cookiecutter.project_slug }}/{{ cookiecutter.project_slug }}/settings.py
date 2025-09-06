@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "widget_tweaks",
     "django_cotton",
 ]
 
@@ -49,10 +48,35 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 
+# Template backends: jinja2 or dtl
+{% if cookiecutter.template_engine == "jinja" %}
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "DIRS": [BASE_DIR / "jinja2"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "environment": "{{ cookiecutter.project_slug }}.jinja2.Environment",
+        },
+    },
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+{% else %}
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
@@ -72,8 +96,9 @@ TEMPLATES = [
             ],
             "builtins": ["django_cotton.templatetags.cotton"],
         },
-    },
+    }
 ]
+{% endif %}
 
 WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
 
