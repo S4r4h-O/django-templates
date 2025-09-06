@@ -4,6 +4,7 @@
   "github_username": "S4r4h-O",
   "project_name": "Django Test",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "template_engine": "django",
   "project_short_description": "A basic template for Django + Tailwind + DaisyUI",
   "first_version": "0.1.0"
 }
