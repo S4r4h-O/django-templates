@@ -2,3 +2,4 @@ django
 django-components
 django-cotton
 django-environ
+Jinja2
