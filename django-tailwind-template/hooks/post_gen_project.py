@@ -155,6 +155,34 @@ def main():
         cwd=project_dir,
     )
 
+    make_migrations = subprocess.Popen(
+        [".venv/bin/python3", "manage.py", "makemigrations"],
+        cwd=project_dir,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    for line in make_migrations.stdout:
+        print(line, end="")
+
+    for line in make_migrations.stderr:
+        print(line, end="")
+
+    migrate = subprocess.Popen(
+        [".venv/bin/python3", "manage.py", "migrate"],
+        cwd=project_dir,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    for line in migrate.stdout:
+        print(line, end="")
+
+    for line in migrate.stderr:
+        print(line, end="")
+
     print(
         """ Post generation setup complete. Next steps:
     Run
@@ -162,8 +190,6 @@ def main():
     ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css or
     ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css --watch
 
-    python manage.py makemigrations
-    python manage.py migrate
     python manage.py runserver
     """
     )
