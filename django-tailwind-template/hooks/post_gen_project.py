@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 import secrets
 import platform
@@ -84,11 +83,11 @@ def get_tailwind_executable_url():
 
 
 def main():
-    project_dir = os.getcwd()
-    static_css_dir = os.path.join(project_dir, "static", "css")
-    static_js_dir = os.path.join(project_dir, "static", "js")
+    project_dir = Path.cwd()
+    static_css_dir = Path(project_dir / "static" / "css")
+    static_js_dir = Path(project_dir / "static" / "js")
     secret = generate_secret_key()
-    env_path = Path(f"{project_dir}/.env")
+    env_path = Path(project_dir / ".env")
 
     print("Downloading Tailwind CSS executable...")
     tailwind_url = get_tailwind_executable_url()
@@ -99,7 +98,7 @@ def main():
     executable_name = (
         "tailwindcss.exe" if platform.system().lower() == "windows" else "tailwindcss"
     )
-    tailwind_path = os.path.join(static_css_dir, executable_name)
+    tailwind_path = Path(static_css_dir / executable_name)
 
     if download_file(tailwind_url, tailwind_path):
         if platform.system().lower() != "windows":
@@ -113,7 +112,7 @@ def main():
     daisyui_js_url = (
         "https://github.com/saadeghi/daisyui/releases/latest/download/daisyui.js"
     )
-    daisyui_js_path = os.path.join(static_css_dir, "daisyui.js")
+    daisyui_js_path = Path(static_js_dir / "daisyui.js")
     if not download_file(daisyui_js_url, daisyui_js_path):
         print("Failed to download daisyui.js")
 
@@ -121,13 +120,13 @@ def main():
     daisyui_theme_url = (
         "https://github.com/saadeghi/daisyui/releases/latest/download/daisyui-theme.js"
     )
-    daisyui_theme_path = os.path.join(static_css_dir, "daisyui-theme.js")
+    daisyui_theme_path = Path(static_js_dir / "daisyui-theme.js")
     if not download_file(daisyui_theme_url, daisyui_theme_path):
         print("Failed to download daisyui-theme.js")
 
     print("Downloading htmx.min.js...")
     htmx_js_url = "https://unpkg.com/htmx.org@latest/dist/htmx.min.js"
-    htmx_js_path = os.path.join(static_js_dir, "htmx.min.js")
+    htmx_js_path = Path(static_js_dir / "htmx.min.js")
     if not download_file(htmx_js_url, htmx_js_path):
         print("Failed to download htmx.min.js")
 
@@ -137,23 +136,6 @@ def main():
     print("Setting up python environment...")
     subprocess.run(["uv", "venv", ".venv", "--python=3.11"])
     subprocess.run(["uv", "pip", "install", "-r", "requirements.txt"], cwd=project_dir)
-
-    print("Initializing git repository...")
-    subprocess.run(["git", "init", project_dir], cwd=project_dir)
-
-    print(
-        "Running ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css..."
-    )
-    subprocess.run(
-        [
-            "./static/css/tailwindcss",
-            "-i",
-            "./static/css/input.css",
-            "-o",
-            "./static/css/output.css",
-        ],
-        cwd=project_dir,
-    )
 
     make_migrations = subprocess.Popen(
         [".venv/bin/python3", "manage.py", "makemigrations"],
@@ -183,12 +165,13 @@ def main():
     for line in migrate.stderr:
         print(line, end="")
 
+    print("Initializing git repository...")
+    subprocess.run(["git", "init", project_dir], cwd=project_dir)
+
     print(
-        """ Post generation setup complete. Next steps:
+        """Post generation setup complete. Next steps:
     Run
     cd {{ cookiecutter.project_slug }}
-    ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css or
-    ./static/css/tailwindcss -i static/css/input.css -o static/css/output.css --watch
 
     python manage.py runserver
     """
